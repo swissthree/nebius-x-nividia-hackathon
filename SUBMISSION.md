@@ -4,6 +4,10 @@ Everything here is a draft to finish once the live run is done. Items marked `[F
 
 ---
 
+## 0. Before switching the repo to public
+- [ ] `git log --all --stat` shows no `.env`
+- [ ] README demo + video links filled in
+
 ## 1. Project description (for the submission form)
 
 **Meeting-to-Actions** turns a raw meeting transcript into a conflict-free action plan: every task with an owner, deadline, priority and dependencies, plus a ready-to-send follow-up email for each person.

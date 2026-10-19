@@ -13,7 +13,8 @@ Everything that can be built without the API key is done. The remaining work nee
 
 1. ~~API key~~ ✅ · ~~model IDs~~ ✅ · ~~smoke test~~ ✅ 11/11 (Session 3)
 2. ~~Reasoning switch confirmed~~ ✅ · ~~demo replies recorded~~ ✅
-3. **Next: put the code on GitHub** (repo `swissthree/nebius-x-nividia-hackathon` already set as remote; nothing committed yet). Check `.env` is NOT staged before the first commit.
+3. ~~First commit + push~~ ✅ (Oct 18, 23:27). ⚠️ `.env` was accidentally included because `.gitignore` line 2 had a pasted command (`.envpip install …`). Fixed `.gitignore`; removed `.env` via `git rm --cached .env` + `commit --amend` + `push --force`. Repo is **private**, so no public exposure.
+   - Done: `.env` removed from the commit and force-pushed; working tree clean. User decided to keep the current key (no rotation).
 4. Fill `FEEDBACK_NOTES.md` from what you saw (latency, quality per tier, onboarding).
 5. Push to a public GitHub repo → CI runs tests **and builds the Docker image** (I couldn't build it in my sandbox — Docker Hub is blocked there).
 6. Deploy per `DEPLOY.md` (record demo replies → push image → public Serverless Endpoint).
