@@ -1,0 +1,16 @@
+Jordan: Morning. Quick round. Aisha, you first.
+Aisha: I'm finishing the new billing API schema. I should have it published for review by Wednesday.
+Jordan: Okay. Ken, you're building the billing page on top of that, right?
+Ken: Yes, but I'm blocked until Aisha's schema is final. I'll start the billing page as soon as it's published and aim for Friday.
+Jordan: Got it. Lucia?
+Lucia: I'm on vacation from Thursday, so I can't finish the invoice PDF generator.
+Jordan: Right. Ken, can you pick up the invoice PDF generator after the billing page?
+Ken: I can, but realistically not before next Monday.
+Jordan: That's fine, the PDF generator isn't needed until the end of the month. Ken owns it now.
+Lucia: I'll write handover notes for the PDF generator before I leave on Wednesday.
+Aisha: Also, the staging database is almost out of disk space. Someone needs to clean it up.
+Jordan: I'll take care of the staging cleanup today.
+Ken: Are we still doing the security review for the billing page, or is that next quarter?
+Jordan: Not sure yet. I'll ask the security team and update the channel.
+Jordan: Decision for the record: billing goes behind a feature flag until the security review is done.
+Jordan: Okay, that's it. Thanks all.

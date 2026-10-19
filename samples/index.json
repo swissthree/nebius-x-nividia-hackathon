@@ -1,0 +1,8 @@
+[
+  {"id": "product_sync", "label": "Product launch sync", "title": "v2.3 launch sync", "sender": "Priya",
+   "highlights": "Task reassigned mid-meeting; QA time vs. Friday launch conflict; open legal question"},
+  {"id": "customer_escalation", "label": "Customer escalation call", "title": "Export failures — escalation", "sender": "Elena",
+   "highlights": "Customer deadline vs. engineering estimate resolved with a stopgap; SLA credit left open"},
+  {"id": "eng_standup", "label": "Engineering standup", "title": "Billing team standup", "sender": "Jordan",
+   "highlights": "Dependency chain (schema → page → PDF); work reassigned for a vacation; feature-flag decision"}
+]

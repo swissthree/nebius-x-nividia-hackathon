@@ -1,0 +1,19 @@
+# secrets — never commit your real key
+.env
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# runtime logs
+logs/
+
+# os / editor
+.DS_Store
+.vscode/
+.idea/
+.cache/
+smoke_report.md

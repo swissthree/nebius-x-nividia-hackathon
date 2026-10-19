@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meeting-to-Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f7f4; --panel: #ffffff; --ink: #16181d; --muted: #5d636e; --line: #e3e5e0;
+    --accent: #76b900; --accent-ink: #355400; --accent-soft: #eef7dc;
+    --high: #c2410c; --high-soft: #fdebe1; --med: #a16207; --med-soft: #fdf4d8; --low: #475569; --low-soft: #eef1f5;
+    --nano: #0e7490; --super: #7c3aed; --ultra: #b45309;
+    --radius: 12px; --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1114; --panel: #171a1f; --ink: #e9ebef; --muted: #9aa1ad; --line: #2a2f37;
+      --accent: #8fd11a; --accent-ink: #c8f07a; --accent-soft: #1f2a10;
+      --high: #fb923c; --high-soft: #3a1d0e; --med: #facc15; --med-soft: #33290a; --low: #a3b0c2; --low-soft: #222831;
+      --nano: #22d3ee; --super: #a78bfa; --ultra: #fbbf24;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 Inter, system-ui, sans-serif; }
+  header { display: flex; align-items: center; gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  .logo { width: 28px; height: 28px; border-radius: 8px; background: var(--accent); display: grid; place-items: center; color: #10200a; font-weight: 700; }
+  header h1 { font-size: 17px; margin: 0; font-weight: 600; }
+  header .tag { color: var(--muted); font-size: 13px; }
+  .badge { margin-left: auto; font: 500 12px var(--mono); padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); }
+  .badge.live { background: var(--accent-soft); color: var(--accent-ink); border-color: transparent; }
+  main { display: grid; grid-template-columns: minmax(320px, 420px) 1fr; gap: 20px; padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
+  .badge, header h1 { white-space: nowrap; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; padding: 16px; } header .tag { display: none; } header { padding: 14px 16px; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+  .card + .card { margin-top: 16px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 12px; font-weight: 600; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+  select { flex: 1; min-width: 0; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); font: 500 14px Inter, sans-serif; cursor: pointer; }
+  .hint { color: var(--muted); font-size: 12.5px; margin-top: 8px; min-height: 1em; }
+  .savings { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-ink); font-size: 13.5px; }
+  .savings b { font-size: 18px; display: block; color: var(--ink); }
+  .cached { font: 600 10px var(--mono); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line); margin-left: 6px; color: var(--muted); }
+  .card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .card-head h2 { margin: 0; flex: 1; }
+  .card-head button { padding: 5px 10px; font-size: 12.5px; }
+  input, textarea { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit; }
+  textarea { min-height: 340px; font: 13px/1.55 var(--mono); resize: vertical; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  button { font: 500 14px Inter, sans-serif; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+  button:hover { border-color: var(--muted); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #10200a; font-weight: 600; flex: 1; }
+  button:disabled { opacity: .55; cursor: progress; }
+  .stack > .card:first-child { position: sticky; top: 16px; }
+  .empty { color: var(--muted); text-align: center; padding: 48px 12px; }
+  .summary { font-size: 16px; margin: 0; }
+  .warn { background: var(--med-soft); color: var(--med); padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-top: 10px; }
+  .error { background: var(--high-soft); color: var(--high); padding: 10px 12px; border-radius: 8px; font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12px; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  .why { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+  .pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+  .p-high { background: var(--high-soft); color: var(--high); }
+  .p-medium { background: var(--med-soft); color: var(--med); }
+  .p-low { background: var(--low-soft); color: var(--low); }
+  .id { font: 12px var(--mono); color: var(--muted); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 1100px) { .grid2 { grid-template-columns: 1fr; } }
+  ul.plain { margin: 0; padding-left: 18px; } ul.plain li { margin: 4px 0; }
+  .conflict { border-left: 3px solid var(--high); padding: 6px 10px; margin: 8px 0; }
+  .conflict small { display: block; color: var(--muted); }
+  .email { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-top: 10px; }
+  .email-head { display: flex; align-items: center; gap: 8px; }
+  .email-head strong { flex: 1; } .email-head button { padding: 4px 10px; font-size: 12px; }
+  .email pre { white-space: pre-wrap; font: 13.5px/1.55 Inter, sans-serif; margin: 8px 0 0; color: var(--ink); }
+  .route { display: grid; grid-template-columns: 80px 64px 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--line); font-size: 13px; }
+  .route:last-of-type { border-bottom: 0; }
+  .tier { font: 600 11px var(--mono); text-transform: uppercase; padding: 3px 8px; border-radius: 6px; text-align: center; color: var(--panel); }
+  .t-nano { background: var(--nano); } .t-super { background: var(--super); } .t-ultra { background: var(--ultra); }
+  .model { font: 12px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nums { font: 12px var(--mono); color: var(--muted); text-align: right; }
+  #results { transition: opacity .2s; } #results.stale { opacity: .35; pointer-events: none; }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">M</div>
+  <h1>Meeting-to-Actions</h1>
+  <span class="tag">Transcript in → tasks &amp; follow-ups out · NVIDIA Nemotron on Nebius Token Factory</span>
+  <span id="mode" class="badge">checking…</span>
+</header>
+
+<main>
+  <div class="stack">
+    <section class="card">
+      <h2>Meeting</h2>
+      <label for="title">Title</label>
+      <input id="title" value="v2.3 launch sync">
+      <label for="sender">Send follow-ups as</label>
+      <input id="sender" value="Priya">
+      <label for="transcript">Transcript <span style="opacity:.7">(one “Name: text” per line works best)</span></label>
+      <textarea id="transcript" placeholder="Paste a transcript, upload a .txt, or load the sample."></textarea>
+      <div class="row">
+        <select id="sampleSel" aria-label="Load a sample transcript"><option value="">Load a sample…</option></select>
+        <button id="uploadBtn" type="button">Upload .txt</button>
+        <input id="file" type="file" accept=".txt,.md,.vtt,.srt,text/plain" hidden>
+      </div>
+      <div id="sampleHint" class="hint"></div>
+      <div class="row"><button id="runBtn" class="primary" type="button">Generate action plan</button></div>
+    </section>
+  </div>
+
+  <div id="results">
+    <section class="card empty">Results will appear here — tasks with owners and priorities, resolved conflicts, and a draft email for each person.</section>
+  </div>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+async function loadHealth() {
+  try {
+    const h = await (await fetch("/api/health")).json();
+    const m = $("mode");
+    m.textContent = h.mock ? "MOCK MODE · no API key" : "LIVE · Token Factory";
+    m.className = "badge" + (h.mock ? "" : " live");
+    m.title = h.tiers.map((t) => `${t.tier}: ${t.model}`).join("\n");
+  } catch { $("mode").textContent = "server offline"; }
+}
+
+let SAMPLES = [];
+async function loadSamples() {
+  try {
+    SAMPLES = await (await fetch("/api/samples")).json();
+    $("sampleSel").innerHTML += SAMPLES.map((s) => `<option value="${esc(s.id)}">${esc(s.label)}</option>`).join("");
+  } catch {}
+}
+$("sampleSel").onchange = async (e) => {
+  const s = SAMPLES.find((x) => x.id === e.target.value);
+  if (!s) return;
+  $("transcript").value = await (await fetch(`/api/samples/${encodeURIComponent(s.id)}`)).text();
+  $("title").value = s.title; $("sender").value = s.sender;
+  $("sampleHint").textContent = "Watch for: " + s.highlights;
+  e.target.value = "";
+};
+$("uploadBtn").onclick = () => $("file").click();
+$("file").onchange = async (e) => { const f = e.target.files[0]; if (f) $("transcript").value = await f.text(); };
+
+$("runBtn").onclick = async () => {
+  const btn = $("runBtn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Nano extracting → Ultra resolving → Super drafting…';
+  $("results").classList.add("stale");
+  try {
+    const res = await fetch("/api/process", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ transcript: $("transcript").value, title: $("title").value, sender: $("sender").value }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Request failed");
+    render(data);
+  } catch (err) {
+    $("results").innerHTML = `<section class="card"><div class="error">${esc(err.message)}</div></section>`;
+  } finally {
+    btn.disabled = false; btn.textContent = "Generate action plan";
+    $("results").classList.remove("stale");
+  }
+};
+
+function render(d) {
+  const tasks = d.tasks.map((t) => `
+    <tr>
+      <td><span class="id">${esc(t.id)}</span></td>
+      <td>${esc(t.title)}${t.rationale ? `<div class="why">${esc(t.rationale)}</div>` : ""}
+        ${t.depends_on?.length ? `<div class="why">after ${t.depends_on.map(esc).join(", ")}</div>` : ""}</td>
+      <td>${esc(t.owner || "—")}</td>
+      <td>${esc(t.due || "—")}</td>
+      <td><span class="pill p-${esc(t.priority)}">${esc(t.priority)}</span></td>
+    </tr>`).join("");
+
+  const list = (xs, none) => xs.length ? `<ul class="plain">${xs.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : `<div class="why">${none}</div>`;
+  const conflicts = d.conflicts.length
+    ? d.conflicts.map((c) => `<div class="conflict">${esc(c.description)}<small>→ ${esc(c.resolution || "unresolved")}</small></div>`).join("")
+    : `<div class="why">No conflicts detected.</div>`;
+
+  const emails = d.emails.map((e, i) => `
+    <div class="email">
+      <div class="email-head"><strong>To ${esc(e.to)} · ${esc(e.subject)}</strong>
+        <button type="button" data-copy="${i}">Copy</button></div>
+      <pre>${esc(e.body)}</pre>
+    </div>`).join("") || `<div class="why">No emails drafted.</div>`;
+
+  const calls = d.routing.calls.map((c) => `
+    <div class="route">
+      <span>${esc(c.step)}</span>
+      <span class="tier t-${esc(c.tier)}">${esc(c.tier)}</span>
+      <span class="model" title="${esc(c.model)}">${esc(c.model)}${c.ok ? "" : " — failed"}${c.thinking ? '<span class="cached" title="Model reasoning enabled for this step">REASONING</span>' : ""}${c.cached ? '<span class="cached">CACHED</span>' : ""}${c.attempts > 1 ? `<span class="cached" title="Reply needed a repair or retry">${c.attempts} TRIES</span>` : ""}</span>
+      <span class="nums">${c.prompt_tokens}+${c.completion_tokens} tok · ${(c.latency_ms / 1000).toFixed(1)}s</span>
+    </div>`).join("");
+  const r = d.routing;
+  const usd = (x) => x < 0.01 ? "$" + x.toFixed(4) : "$" + x.toFixed(3);
+
+  $("results").innerHTML = `
+    <section class="card">
+      <h2>Summary</h2>
+      <p class="summary">${esc(d.summary)}</p>
+      ${d.warnings.map((w) => `<div class="warn">${esc(w)}</div>`).join("")}
+    </section>
+    <section class="card">
+      <div class="card-head"><h2>Tasks (${d.tasks.length})</h2>
+        <button type="button" id="mdBtn">Copy as Markdown</button>
+        <button type="button" id="csvBtn">Download CSV</button>
+        <button type="button" id="jsonBtn">JSON</button></div>
+      <table><thead><tr><th></th><th>Task</th><th>Owner</th><th>Due</th><th>Priority</th></tr></thead><tbody>${tasks}</tbody></table>
+    </section>
+    <div class="grid2" style="margin-top:16px">
+      <section class="card" style="margin:0"><h2>Conflicts resolved</h2>${conflicts}</section>
+      <section class="card" style="margin:0"><h2>Decisions</h2>${list(d.decisions, "None recorded.")}
+        <h2 style="margin-top:16px">Open questions</h2>${list(d.open_questions, "None.")}</section>
+    </div>
+    <section class="card"><h2>Follow-up emails</h2>${emails}</section>
+    <section class="card">
+      <h2>Under the hood · Nemotron routing ${d.mock ? "(mock)" : ""}</h2>
+      ${calls}
+      <div class="savings">
+        <div><b>${r.total_tokens.toLocaleString()}</b>tokens</div>
+        <div><b>${usd(r.total_cost_usd)}</b>est. cost with tiered routing</div>
+        <div><b>${usd(r.all_ultra_cost_usd)}</b>if every step ran on Ultra</div>
+        <div><b>${r.savings_pct}%</b>saved</div>
+      </div>
+      <div class="why" style="margin-top:8px">Nano handles cheap extraction, Ultra is reserved for conflict reasoning, Super drafts the emails. Only Ultra is allowed to reason before answering.${d.mock ? " Mock mode: token counts are estimates." : ""} Prices are estimates per 1M tokens.</div>
+    </section>`;
+
+  $("mdBtn").onclick = () => flash($("mdBtn"), copyText(toMarkdown(d)));
+  $("csvBtn").onclick = () => download(`${slug(d.title)}-tasks.csv`, toCSV(d.tasks), "text/csv");
+  $("jsonBtn").onclick = () => download(`${slug(d.title)}.json`, JSON.stringify(d, null, 2), "application/json");
+
+  document.querySelectorAll("[data-copy]").forEach((b) => b.onclick = async () => {
+    const e = d.emails[+b.dataset.copy];
+    try { await navigator.clipboard.writeText(`Subject: ${e.subject}\n\n${e.body}`); b.textContent = "Copied"; }
+    catch { b.textContent = "Copy failed"; }
+    setTimeout(() => (b.textContent = "Copy"), 1500);
+  });
+}
+
+const slug = (s) => (s || "meeting").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "meeting";
+async function copyText(text) { await navigator.clipboard.writeText(text); }
+async function flash(btn, promise) {
+  const old = btn.textContent;
+  try { await promise; btn.textContent = "Copied"; } catch { btn.textContent = "Copy failed"; }
+  setTimeout(() => (btn.textContent = old), 1500);
+}
+function download(name, text, type) {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a = Object.assign(document.createElement("a"), { href: url, download: name });
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+function toMarkdown(d) {
+  const lines = [`## ${d.title}`, "", d.summary, "", "### Tasks"];
+  d.tasks.forEach((t) => lines.push(`- [ ] **${t.title}** — ${t.owner || "unassigned"}${t.due ? `, due ${t.due}` : ""} _(${t.priority})_`));
+  if (d.decisions.length) lines.push("", "### Decisions", ...d.decisions.map((x) => `- ${x}`));
+  if (d.open_questions.length) lines.push("", "### Open questions", ...d.open_questions.map((x) => `- ${x}`));
+  return lines.join("\n");
+}
+function toCSV(tasks) {
+  const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const rows = [["id", "title", "owner", "due", "priority", "depends_on", "rationale"]];
+  tasks.forEach((t) => rows.push([t.id, t.title, t.owner, t.due, t.priority, (t.depends_on || []).join(" "), t.rationale]));
+  return rows.map((r) => r.map(cell).join(",")).join("\r\n");
+}
+
+loadSamples();
+loadHealth();
+</script>
+</body>
+</html>

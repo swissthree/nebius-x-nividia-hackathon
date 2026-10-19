@@ -1,0 +1,18 @@
+Priya: Okay, let's get started. Main topic is the v2.3 launch. Where are we?
+Marco: Backend is done except the rate-limiting fix. I'll have that merged by Wednesday.
+Priya: Great. Dana, can you finish the onboarding email copy by Thursday?
+Dana: Yes, I can do that by Thursday.
+Sam: QA needs at least three full days on the release candidate, so realistically we can't sign off before Monday.
+Priya: Hmm, marketing already announced a Friday launch though.
+Marco: If the rate-limiting fix lands Wednesday, QA only gets Thursday and Friday. That's two days.
+Priya: Okay, we decided to keep the public announcement but ship to 10% of users on Friday and go to 100% after QA sign-off.
+Sam: That works. I'll write the QA test plan by tomorrow.
+Dana: I'll also update the help center articles for the new settings page.
+Marco: Dana, I can take the help center update actually, I wrote the settings page.
+Priya: Fine, Marco owns the help center articles then. Dana, focus on the email copy.
+Sam: Who is handling the rollback runbook?
+Priya: Good question. Nobody yet. Marco, can you draft the rollback runbook by Thursday?
+Marco: Sure, I'll draft the rollback runbook by Thursday.
+Priya: Last thing — do we need legal to review the new data-retention text?
+Dana: Not sure. I'll ask legal today.
+Priya: Great. I'll send the staged-rollout plan to marketing by end of day. Thanks everyone.

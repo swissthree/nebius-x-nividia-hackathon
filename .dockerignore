@@ -1,0 +1,13 @@
+.env
+.git
+.cache
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+tests
+scripts
+smoke_report.md
+*.md
+!README.md

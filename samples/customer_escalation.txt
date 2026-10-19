@@ -1,0 +1,18 @@
+Elena: Thanks for jumping on, everyone. Ravi, I know your team is frustrated about the export failures.
+Ravi: We are. Our finance team can't close the month without those CSV exports. We need this fixed by Friday.
+Tom: I've reproduced it. Exports over 50,000 rows time out. A proper fix means moving exports to a background job, and that won't be safe to ship before Tuesday.
+Ravi: Tuesday is too late for our close.
+Tom: What I can do is raise the timeout for your workspace today as a stopgap. That should get the large exports through, just slowly.
+Ravi: If that works for Friday, we can live with the real fix on Tuesday.
+Elena: Okay, so we agreed: temporary timeout increase today, permanent background-export fix on Tuesday.
+Tom: I'll apply the timeout increase this afternoon and confirm in the support ticket.
+Elena: Ravi, can you have someone on your side test a full export tomorrow morning?
+Ravi: Yes, Mei will run the test tomorrow morning.
+Elena: Great. I'll send you a written incident summary by Thursday.
+Ravi: One more thing — this breaches our SLA. Are we getting a service credit?
+Elena: I need to check with our billing team on that. I'll get back to you by Thursday as well.
+Tom: I'll also add a monitoring alert for export timeouts so we catch this before customers do.
+Elena: Tom, can you also write the post-mortem? Let's say by next Wednesday, after the fix ships.
+Tom: Sure, post-mortem by next Wednesday.
+Ravi: Thanks. Please keep me in the loop on the Tuesday release.
+Elena: Will do. Talk soon.
