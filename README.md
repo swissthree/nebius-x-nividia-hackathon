@@ -123,6 +123,14 @@ samples/         demo transcripts
 tests/           pytest suite
 ```
 
+## How this was built
+
+This project was **vibe coded**: built in a few days by directing an AI coding assistant (Claude, by Anthropic) rather than writing the code by hand.
+
+- **The AI wrote** the code, tests, prompts, docs, demo video and thumbnail, from plain-language instructions.
+- **I (Marcus)** chose the idea and track, set up the Nebius, GitHub and Render accounts and keys, ran the live tests on real Nemotron models, deployed the demo, and reviewed and decided on each step (for example, choosing free hosting over a paid Nebius endpoint).
+- Every claim in this README was checked against real runs: the live smoke test (11/11 checks on real Nemotron output), the 45-test suite, and the deployed demo.
+
 ## License
 
 [MIT](LICENSE)

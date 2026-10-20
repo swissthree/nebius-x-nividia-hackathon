@@ -74,4 +74,6 @@ Checklist: upload as **Public** on YouTube → open the link in a logged-out win
 
 ## 4. Built during the submission period
 
-Everything. The repository was created on Oct 18, 2026 during the hackathon; see git history.
+Everything. The repository was created on Oct 18, 2026, during the hackathon; see the git history.
+
+**How it was built:** this project was vibe coded. The code, tests, prompts, docs, demo video and thumbnail were written by an AI coding assistant (Claude, by Anthropic), directed through plain-language instructions. I chose the idea and track, set up the Nebius, GitHub and Render accounts and keys, ran the live tests on real Nemotron models, deployed the demo, and reviewed each step.
