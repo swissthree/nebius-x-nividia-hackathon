@@ -7,7 +7,7 @@
 > Track: **Best Apps & Agents** · Nebius × NVIDIA Hackathon 2026
 
 - **Demo:** https://meeting-to-actions.onrender.com (free hosting: if it's been idle, the first load takes ~1 minute to wake up)
-- **Video:** _TBD_
+- **Video:** https://www.youtube.com/watch?v=mNIgZXrIAU0
 
 ---
 
