@@ -1,6 +1,6 @@
 # Submission drafts
 
-Everything here is a draft to finish once the live run is done. Items marked `[FILL]` need real numbers or links.
+Ready-to-paste text for the submission form. Only the YouTube link is still missing.
 
 ---
 
@@ -52,18 +52,20 @@ Checklist: upload as **Public** on YouTube → open the link in a logged-out win
 ## 3. Feedback on Nebius & NVIDIA tools (draft from FEEDBACK_NOTES.md)
 
 **Nebius Token Factory**
-- Integration: switching the OpenAI SDK over took two settings (`base_url` + key). Moving between Nemotron tiers is just a model-ID change, which made tiered routing trivial to build.
-- `[FILL]` Onboarding: time from signup to first successful call; anything confusing.
-- `[FILL]` Latency per tier on our workload (from smoke_report.md).
-- `[FILL]` Rate limits / errors hit, and how clear the error messages were.
-- `[FILL]` Dashboard: usefulness of per-model usage for tracking credit spend.
-- Docs gap: the API key is shown only once at creation. Easy to miss.
+- **Integration was the easiest part of the build.** The OpenAI SDK worked after changing two settings (`base_url` and the key). Moving between Nemotron tiers is just a model-ID change, which made tiered routing trivial.
+- **Onboarding:** from creating the API key to the first successful call took about 25 minutes, most of it Windows setup on our side rather than Token Factory.
+- **Model IDs are case-sensitive and inconsistently cased** (`nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B`, `nvidia/Nemotron-3-Ultra-550b-a55b`, `nvidia/nemotron-3-super-120b-a12b`). Lowercase IDs from third-party listings fail with a not-found error. A consistent naming scheme, or case-insensitive matching, would save new users time.
+- **Reasoning control is undocumented.** Nemotron 3 models reason by default. `chat_template_kwargs: {"enable_thinking": false}` worked on Token Factory for Nano and Super, but we found it in NVIDIA's model docs, not in Token Factory's. A per-model note on which switches are supported would help.
+- **Reliability:** no rate limits or API errors hit during development or the live demo.
+- **Latency on our workload** (≈1.2k input tokens per step): Nano ~2 s, Super ~1–2 s, Ultra 4–22 s with reasoning on. A full meeting is about 8–25 s end to end and costs ≈ $0.005–0.01.
+- Small docs gap: the API key is shown only once at creation, which is easy to miss.
 
 **NVIDIA Nemotron**
-- `[FILL]` Nano: extraction recall on our samples; JSON reliability.
-- `[FILL]` Ultra: did it apply the reassignment and flag the QA/Friday conflict? (smoke test checks)
-- `[FILL]` Super: email tone and length adherence.
-- `[FILL]` Did reasoning traces (`<think>`) show up in content? (Our parser strips them either way.)
+- **Ultra's reasoning was the standout.** On untuned prompts it passed all 11 of our targeted checks. It applied mid-meeting reassignments (and noted them), resolved a QA-time vs launch-date conflict as the team's staged rollout, dropped questions that were answered later in the meeting, built dependency chains (schema → page → PDF), and flagged a tight two-day window as a risk on its own.
+- **Nano is a reasoning model by default, and that matters for "cheap" steps.** With reasoning on, extraction took 12–24 s and up to ~7k output tokens for a ~500-token answer. The first reply ran past `max_tokens` and needed a retry, so the cheap step quietly cost double. With reasoning off: ~2 s, ~90% fewer tokens, same accuracy.
+- **Super** wrote short, correctly scoped follow-up emails (each person gets only their own tasks). One minor inconsistency: it sometimes skips an email to the meeting's own sender.
+- **JSON output was reliable** on all three tiers once reasoning was off for Nano. With reasoning on, Nano's truncated replies were the only JSON failures we saw.
+- One small hallucination: a summary once attached a deadline to a task that had none. A prompt rule fixed most of it.
 
 **Nebius AI Cloud (Serverless Endpoints)**
 - Tried to host the demo on a Serverless Endpoint. CLI setup worked (WSL on Windows; no native Windows CLI). `nebius ai endpoint list` worked, but `create` returned a bare `PermissionDenied` even with explicit project, subnet and a published public image. The error didn't say what was missing (billing? quota? role?), which made it hard to fix. Hosted the web app on a free host instead; all inference still runs on Token Factory.
