@@ -92,7 +92,7 @@ Everything that can be built without the API key is done. The remaining work nee
 - ✅ **Live: https://meeting-to-actions.onrender.com** (Render service `meeting-to-actions`, Free $0 plan, Docker, health `/api/health`, env: NEBIUS_API_KEY secret, LLM_CACHE=1, RATE_LIMIT_PER_MINUTE=5, DAILY_RUN_CAP=50). Auto-deploys on push to `main`.
 - Verified in browser: LIVE mode, correct model IDs, sample replays from cache (0.2 s), new transcript live 7.6 s / ≈$0.005 with correct reassignment + dependency.
 - ✅ Demo video recorded by Claude (1:40, captions, no voiceover): `meeting-to-actions-demo.mp4` in the project folder (git-ignored). Recorded locally replaying the recorded real Nemotron runs (`demo_cache/`); Token Factory dashboard not shown.
-- ✅ Video on YouTube: https://www.youtube.com/watch?v=mNIgZXrIAU0 (linked in README). Vibe-coding disclosure added to README + SUBMISSION.
+- ✅ Video on YouTube: https://youtu.be/mNIgZXrIAU0 (linked in README). Vibe-coding disclosure added to README + SUBMISSION.
 - **Remaining:** user fills in the hackathon form from SUBMISSION.md and submits (deadline Oct 30). Old note: optional voiceover; (was: record ≤3 min video) (script in SUBMISSION.md), upload public to YouTube, add link to README; fill remaining [FILL]s in SUBMISSION.md (feedback onboarding notes); submit by Oct 29.
 
 ## Next up (after the live run)
