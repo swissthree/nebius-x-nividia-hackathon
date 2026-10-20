@@ -80,12 +80,16 @@ Everything that can be built without the API key is done. The remaining work nee
 ---
 
 ## Deploy setup (Oct 18, late)
-- Neb
-ius CLI installed in **WSL Ubuntu** (Windows has no native CLI). Open with `wsl` from PowerShell.
+- Nebius CLI installed in **WSL Ubuntu** (Windows has no native CLI). Open with `wsl` from PowerShell.
 - Profile `hackathon` created and default (federation login). Project `project-e04a88yhbc00dhhzjh6qcs`, region **eu-west2**, tenant `emerald-urial-tenant-92m`.
 - Gotcha: the interactive `nebius profile create` asked for a tenant ID; the console's `tenantuseraccount-…` ID is wrong there. Passing `--parent-id <project-…>` directly worked.
 - **Chosen route (Oct 19): no local Docker.** `.github/workflows/ci.yml` runs tests, builds the image, health-checks it, and on `main` pushes `ghcr.io/swissthree/nebius-x-nividia-hackathon:latest`. GHCR package must be set **Public**. Endpoint creation steps (WSL) in DEPLOY.md; key loaded from `.env` without typing it.
 - Note: I (Claude) can see terminals/browsers via computer use but can't type in them; user runs commands.
+
+## Session 4 — Oct 19: deployment
+- GitHub Actions workflow live: tests + image build + push to GHCR on `main` (needed `git push` from **PowerShell**; WSL git has no GitHub login).
+- Nebius `endpoint create` → PermissionDenied every time (project/subnet/image all fine; list works). Likely billing/quota. **User doesn't want to spend money → host on Render free tier** (Docker from repo, `PORT` honored, sleeps after 15 min idle). `DAILY_RUN_CAP` lowered to 50. DEPLOY.md/README/SUBMISSION/FEEDBACK updated.
+- **Next:** user creates the Render web service (DEPLOY.md top section), then I verify the live URL and add it to README + SUBMISSION.
 
 ## Next up (after the live run)
 

@@ -5,7 +5,8 @@ Everything here is a draft to finish once the live run is done. Items marked `[F
 ---
 
 ## 0. Before switching the repo to public
-- [ ] `git log --all --stat` shows no `.env`
+- [x] `git log --all --stat` shows no `.env`
+- [x] Repo public: https://github.com/swissthree/nebius-x-nividia-hackathon
 - [ ] README demo + video links filled in
 
 ## 1. Project description (for the submission form)
@@ -24,7 +25,7 @@ Everything here is a draft to finish once the live run is done. Items marked `[F
 
 The UI shows an "Under the hood" panel with which model handled each step, tokens, latency and cost. Only Ultra is allowed to reason before answering. Turning reasoning off for Nano and Super cut extraction from ~20 s to ~2 s and its tokens by ~90%, with no loss in accuracy. A whole meeting costs about one cent. If the Ultra step fails, the app falls back to the raw Nano extraction instead of erroring.
 
-**Built with:** Nebius Token Factory (OpenAI-compatible API) · NVIDIA Nemotron 3 Nano / Super / Ultra · Nebius Serverless Endpoint (hosting) · Python, FastAPI.
+**Built with:** Nebius Token Factory (OpenAI-compatible API) · NVIDIA Nemotron 3 Nano / Super / Ultra · Python, FastAPI.
 
 ---
 
@@ -62,8 +63,8 @@ Checklist: upload as **Public** on YouTube → open the link in a logged-out win
 - `[FILL]` Super: email tone and length adherence.
 - `[FILL]` Did reasoning traces (`<think>`) show up in content? (Our parser strips them either way.)
 
-**Nebius Serverless Endpoint**
-- `[FILL]` Deploy experience: registry push, endpoint creation, time to live URL, logs.
+**Nebius AI Cloud (Serverless Endpoints)**
+- Tried to host the demo on a Serverless Endpoint. CLI setup worked (WSL on Windows; no native Windows CLI). `nebius ai endpoint list` worked, but `create` returned a bare `PermissionDenied` even with explicit project, subnet and a published public image. The error didn't say what was missing (billing? quota? role?), which made it hard to fix. Hosted the web app on a free host instead; all inference still runs on Token Factory.
 
 ---
 

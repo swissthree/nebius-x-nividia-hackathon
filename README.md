@@ -6,7 +6,7 @@
 
 > Track: **Best Apps & Agents** · Nebius × NVIDIA Hackathon 2026
 
-- **Demo:** _TBD_
+- **Demo:** _TBD_ (free hosting: if it's been idle, the first load takes ~1 minute to wake up)
 - **Video:** _TBD_
 
 ---
@@ -43,7 +43,7 @@ Every call is logged (step, model, tokens, latency, cost) and shown in the UI un
 ## Nebius services used
 
 - **Nebius Token Factory** — OpenAI-compatible inference for all three Nemotron tiers.
-- **Nebius Serverless Endpoint** — hosts the public demo container (see [DEPLOY.md](DEPLOY.md)).
+- The web app itself is hosted on Render's free tier (see [DEPLOY.md](DEPLOY.md)); a Nebius Serverless Endpoint setup is included as an option.
 
 ## Architecture
 
@@ -97,7 +97,7 @@ Tests never spend credits: they use mock mode or a fake Token Factory client, wh
 
 ## Deploy
 
-See **[DEPLOY.md](DEPLOY.md)**: build the image, push to Nebius Container Registry, and create a public Nebius Serverless Endpoint.
+See **[DEPLOY.md](DEPLOY.md)**: one-page setup on Render's free tier (no Docker needed locally), plus optional Nebius Serverless Endpoint steps. GitHub Actions also publishes the image to `ghcr.io/swissthree/nebius-x-nividia-hackathon`.
 
 ## Sample meetings
 

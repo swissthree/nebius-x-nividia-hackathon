@@ -19,4 +19,5 @@ Add notes as you go — dated, short. Turn into the final feedback section at th
 - Remaining small quality quirks: summary can still bundle a deadline onto an undated task in a list ("…and update help center articles by Thursday"); Super sometimes skips an email to the sender (product sync) and sometimes doesn't (standup).
 
 ## Other NVIDIA / Nebius tools
-- _TODO:_ Serverless Endpoint deployment experience.
+- 2026-10-19 — Nebius CLI: no native Windows build; installed in WSL Ubuntu fine. Interactive `profile create` asked for a tenant ID and the console's `tenantuseraccount-…` ID was rejected; passing `--parent-id <project>` worked.
+- 2026-10-19 — `nebius ai endpoint create` → `PermissionDenied: you do not have permission to access the requested object` every time (also with explicit `--parent-id`, `--subnet-id`, and after the GHCR image existed). `endpoint list` and `vpc subnet list` worked. The error gives no hint which object or permission (billing? quota? role?). Biggest friction point of the hackathon. Switched hosting to a free host to avoid spending.
