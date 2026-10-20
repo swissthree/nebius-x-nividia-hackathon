@@ -7,7 +7,9 @@ Everything here is a draft to finish once the live run is done. Items marked `[F
 ## 0. Before switching the repo to public
 - [x] `git log --all --stat` shows no `.env`
 - [x] Repo public: https://github.com/swissthree/nebius-x-nividia-hackathon
-- [ ] README demo + video links filled in
+- [x] Demo live: https://meeting-to-actions.onrender.com
+- [ ] Upload `meeting-to-actions-demo.mp4` to YouTube as **Public**, test logged out
+- [ ] Video link in README
 
 ## 1. Project description (for the submission form)
 
@@ -31,7 +33,7 @@ The UI shows an "Under the hood" panel with which model handled each step, token
 
 ## 2. Demo video script (≤ 3:00)
 
-Record from the deployed URL with the sample replies cached, so nothing can stall.
+Record from https://meeting-to-actions.onrender.com (open it a minute early to wake it up). Samples replay instantly from the recorded replies.
 
 | Time | On screen | Say (roughly) |
 |---|---|---|

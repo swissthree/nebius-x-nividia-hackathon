@@ -89,7 +89,10 @@ Everything that can be built without the API key is done. The remaining work nee
 ## Session 4 — Oct 19: deployment
 - GitHub Actions workflow live: tests + image build + push to GHCR on `main` (needed `git push` from **PowerShell**; WSL git has no GitHub login).
 - Nebius `endpoint create` → PermissionDenied every time (project/subnet/image all fine; list works). Likely billing/quota. **User doesn't want to spend money → host on Render free tier** (Docker from repo, `PORT` honored, sleeps after 15 min idle). `DAILY_RUN_CAP` lowered to 50. DEPLOY.md/README/SUBMISSION/FEEDBACK updated.
-- **Next:** user creates the Render web service (DEPLOY.md top section), then I verify the live URL and add it to README + SUBMISSION.
+- ✅ **Live: https://meeting-to-actions.onrender.com** (Render service `meeting-to-actions`, Free $0 plan, Docker, health `/api/health`, env: NEBIUS_API_KEY secret, LLM_CACHE=1, RATE_LIMIT_PER_MINUTE=5, DAILY_RUN_CAP=50). Auto-deploys on push to `main`.
+- Verified in browser: LIVE mode, correct model IDs, sample replays from cache (0.2 s), new transcript live 7.6 s / ≈$0.005 with correct reassignment + dependency.
+- ✅ Demo video recorded by Claude (1:40, captions, no voiceover): `meeting-to-actions-demo.mp4` in the project folder (git-ignored). Recorded locally replaying the recorded real Nemotron runs (`demo_cache/`); Token Factory dashboard not shown.
+- **Remaining for submission:** upload video (public) to YouTube and add link to README; optional voiceover; (was: record ≤3 min video) (script in SUBMISSION.md), upload public to YouTube, add link to README; fill remaining [FILL]s in SUBMISSION.md (feedback onboarding notes); submit by Oct 29.
 
 ## Next up (after the live run)
 

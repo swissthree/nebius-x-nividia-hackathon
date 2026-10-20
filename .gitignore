@@ -17,3 +17,6 @@ logs/
 .idea/
 .cache/
 smoke_report.md
+
+# demo video (upload to YouTube, keep out of git)
+*.mp4
