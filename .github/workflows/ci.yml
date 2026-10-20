@@ -1,0 +1,52 @@
+name: CI
+
+# On every push: run the tests (mock mode, no credits), build the Docker image and check it starts.
+# On pushes to main: also publish the image to GitHub Container Registry, where the
+# Nebius Serverless Endpoint pulls it from: ghcr.io/<owner>/<repo>:latest
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      MOCK_LLM: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+
+  image:
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Image name (registry names must be lowercase)
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
+      - name: Build (linux/amd64, what Nebius runs)
+        run: docker build --platform linux/amd64 -t "$IMAGE:latest" -t "$IMAGE:${GITHUB_SHA::7}" .
+
+      - name: Container starts and is healthy
+        run: |
+          docker run -d --name app -p 8000:8000 -e MOCK_LLM=1 "$IMAGE:latest"
+          for i in $(seq 1 30); do curl -fs localhost:8000/api/health && exit 0; sleep 1; done
+          docker logs app; exit 1
+
+      - name: Publish to GitHub Container Registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker push "$IMAGE:latest"
+          docker push "$IMAGE:${GITHUB_SHA::7}"
+          echo "Published $IMAGE:latest" >> "$GITHUB_STEP_SUMMARY"

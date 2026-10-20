@@ -14,7 +14,7 @@ Everything that can be built without the API key is done. The remaining work nee
 1. ~~API key~~ ✅ · ~~model IDs~~ ✅ · ~~smoke test~~ ✅ 11/11 (Session 3)
 2. ~~Reasoning switch confirmed~~ ✅ · ~~demo replies recorded~~ ✅
 3. ~~First commit + push~~ ✅ (Oct 18, 23:27). ⚠️ `.env` was accidentally included because `.gitignore` line 2 had a pasted command (`.envpip install …`). Fixed `.gitignore`; removed `.env` via `git rm --cached .env` + `commit --amend` + `push --force`. Repo is **private**, so no public exposure.
-   - Done: `.env` removed from the commit and force-pushed; working tree clean. User decided to keep the current key (no rotation).
+   - Done: `.env` removed from the commit and force-pushed; working tree clean. User decided to keep the current key (no rotation). History check passed. **Repo made public Oct 18, 23:35** — https://github.com/swissthree/nebius-x-nividia-hackathon (license visible ✓). Keep an eye on Token Factory usage for anything unexpected.
 4. Fill `FEEDBACK_NOTES.md` from what you saw (latency, quality per tier, onboarding).
 5. Push to a public GitHub repo → CI runs tests **and builds the Docker image** (I couldn't build it in my sandbox — Docker Hub is blocked there).
 6. Deploy per `DEPLOY.md` (record demo replies → push image → public Serverless Endpoint).
@@ -78,6 +78,14 @@ Everything that can be built without the API key is done. The remaining work nee
 - Token Factory facts (docs.tokenfactory.nebius.com): base URL `https://api.tokenfactory.nebius.com/v1/`, env var `NEBIUS_API_KEY`, OpenAI SDK compatible; key shown only once at creation.
 
 ---
+
+## Deploy setup (Oct 18, late)
+- Neb
+ius CLI installed in **WSL Ubuntu** (Windows has no native CLI). Open with `wsl` from PowerShell.
+- Profile `hackathon` created and default (federation login). Project `project-e04a88yhbc00dhhzjh6qcs`, region **eu-west2**, tenant `emerald-urial-tenant-92m`.
+- Gotcha: the interactive `nebius profile create` asked for a tenant ID; the console's `tenantuseraccount-…` ID is wrong there. Passing `--parent-id <project-…>` directly worked.
+- **Chosen route (Oct 19): no local Docker.** `.github/workflows/ci.yml` runs tests, builds the image, health-checks it, and on `main` pushes `ghcr.io/swissthree/nebius-x-nividia-hackathon:latest`. GHCR package must be set **Public**. Endpoint creation steps (WSL) in DEPLOY.md; key loaded from `.env` without typing it.
+- Note: I (Claude) can see terminals/browsers via computer use but can't type in them; user runs commands.
 
 ## Next up (after the live run)
 

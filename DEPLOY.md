@@ -1,70 +1,73 @@
 # Deploying the demo to Nebius
 
-Goal: a public URL judges can open with no login, running on **Nebius AI Cloud** (Serverless Endpoint) and calling **Nebius Token Factory**.
+Goal: a public URL judges can open with no login, running on a **Nebius Serverless Endpoint** and calling **Nebius Token Factory**.
 
-> Commands below come from the Nebius docs (Oct 2026). Flags can change — if a command errors, run it without flags and the CLI prompts for each value.
-> Docs: [Serverless endpoints quickstart](https://docs.nebius.com/serverless/quickstart/endpoints) · [Manage endpoints](https://docs.nebius.com/serverless/endpoints/manage) · [Container Registry quickstart](https://docs.nebius.com/container-registry/quickstart)
+**Route used (no Docker needed on your PC):** GitHub Actions builds the image on every push to `main` and publishes it to GitHub Container Registry (GHCR). The Nebius endpoint pulls it from there.
 
-## 0. Prerequisites
-- Docker, the `nebius` CLI (logged in, project selected), `jq`
-- Your Token Factory key working locally (`python scripts/list_models.py` succeeds)
-
-## 1. Record the demo replies (recommended)
-Bakes real Nemotron answers for the three samples into the image, so the sample demo is instant, identical every time and free on judging day. Custom transcripts still go live to Token Factory.
-
-```bash
-python scripts/smoke_test.py          # runs samples live, caches replies in .cache/llm/
-cp .cache/llm/*.json demo_cache/
+```
+git push ──► GitHub Actions: tests → docker build → health check → push ghcr.io/swissthree/nebius-x-nividia-hackathon:latest
+                                                                          │
+Nebius Serverless Endpoint (eu-west2) ◄──────── pulls image ─────────────┘  ──► calls Token Factory (Nemotron)
 ```
 
-## 2. Build and push the image
-```bash
-export REGION_ID=eu-north1            # or your region: us-central1, eu-west1, ...
-export REGISTRY_PATH=$(nebius registry create --name m2a-registry --format json | jq -r ".metadata.id" | cut -d- -f 2)
-nebius registry configure-helper      # sets up docker auth (don't run docker as root)
+> Docs: [Serverless endpoints quickstart](https://docs.nebius.com/serverless/quickstart/endpoints) · [Manage endpoints](https://docs.nebius.com/serverless/endpoints/manage). Flags can change: if a command errors, run `nebius ai endpoint create --help`.
 
-export IMAGE=cr.$REGION_ID.nebius.cloud/$REGISTRY_PATH/meeting-to-actions:v1
-docker build --platform linux/amd64 -t $IMAGE .
-docker push $IMAGE
-```
+## 1. Publish the image (one-time setup)
+1. Push to `main`. Watch the **Actions** tab on GitHub; both jobs (`test`, `image`) should go green.
+2. Make the image public so Nebius can pull it without a password: GitHub → your profile → **Packages** → `nebius-x-nividia-hackathon` → **Package settings** → **Change visibility** → **Public**.
 
-Quick local check before pushing:
-```bash
-docker run --rm -p 8000:8000 --env-file .env -e LLM_CACHE=1 $IMAGE
-# open http://localhost:8000
-```
+After that, every push to `main` publishes a fresh `:latest`.
 
-## 3. Create the endpoint
-Leaving out `--auth` makes the endpoint public (no token needed) — that's what judges need. The rate limiter in the app protects your credits.
+## 2. Create the endpoint (in WSL / Ubuntu)
+Open a terminal, run `wsl`, then:
 
 ```bash
+cd "/mnt/c/Users/marcu/OneDrive/Desktop/github/projects/nebius-x-nividia-hackathon"
+
+# Load the API key from .env without typing it (strips Windows line endings)
+export NEBIUS_API_KEY=$(grep '^NEBIUS_API_KEY=' .env | cut -d= -f2- | tr -d '\r')
+echo "key loaded: ${#NEBIUS_API_KEY} characters"     # should be > 100; never prints the key
+
 nebius ai endpoint create \
   --name meeting-to-actions \
-  --image $IMAGE \
+  --image ghcr.io/swissthree/nebius-x-nividia-hackathon:latest \
+  --container-port 8000 \
   --platform cpu-d3 \
   --preset 4vcpu-16gb \
-  --container-port 8000 \
   --public \
-  --env "LLM_CACHE=1,RATE_LIMIT_PER_MINUTE=5,DAILY_RUN_CAP=300" \
-  --env-secret NEBIUS_API_KEY=<secret_selector>
+  --env "NEBIUS_API_KEY=$NEBIUS_API_KEY,LLM_CACHE=1,RATE_LIMIT_PER_MINUTE=5,DAILY_RUN_CAP=300"
 ```
 
-- **API key:** store it in SecretStash and pass it with `--env-secret` (keeps it out of shell history). If that's a hassle, `--env "NEBIUS_API_KEY=..."` also works.
-- **Model IDs:** if `list_models.py` showed different IDs than the defaults, add them to `--env` too (`NEMOTRON_NANO_MODEL=...` etc.).
-- **Preset:** pick the smallest CPU preset your project offers — the app is tiny; all heavy lifting happens in Token Factory.
-- `--subnet-id` is required; the CLI prompts for it if omitted.
+- **No `--auth` flag** = the URL is open to anyone (what judges need). The app's rate limit and daily cap protect your credits.
+- The CLI will **prompt for a subnet**: pick the default one.
+- **Preset:** choose the smallest CPU preset offered. The app is tiny; the heavy work happens in Token Factory. A running endpoint bills continuously, so check your AI Cloud credits.
 
-## 4. Get the URL and test
+## 3. Get the URL and test
 ```bash
 export ENDPOINT_ID=$(nebius ai endpoint get-by-name --name meeting-to-actions --format jsonpath='{.metadata.id}')
-nebius ai endpoint get "$ENDPOINT_ID" --format json | jq -r '.status.public_endpoints[] | select(startswith("https://"))'
+nebius ai endpoint get "$ENDPOINT_ID" --format json | grep -o 'https://[^"]*' | head -1
 ```
-Open the URL logged out / in a private window. The badge in the top right should say **LIVE · Token Factory**. Run each sample, then one custom transcript.
+Open the URL in a private window. The badge should say **LIVE · Token Factory**. Run each sample (instant, from the recorded replies), then one custom transcript (live).
 
-Logs: `nebius ai endpoint logs $ENDPOINT_ID`
+Logs if something's wrong: `nebius ai endpoint logs $ENDPOINT_ID`
 
-## 5. After judging
-The endpoint bills while it runs. Delete it once judging is over: `nebius ai endpoint delete $ENDPOINT_ID`
+## Updating the demo later
+Push to `main` → wait for the green Actions run → recreate the endpoint so it pulls the new `:latest`:
+```bash
+nebius ai endpoint delete $ENDPOINT_ID   # then run step 2 again
+```
+If you change prompts or models, re-record the sample replies first: `py scripts/smoke_test.py`, then copy the new files from `.cache/llm/` into `demo_cache/` (the `test_demo_cache` test tells you when they're stale).
 
-## Fallback
-If the Serverless Endpoint gives trouble close to the deadline, the same image runs on any container host. The project still satisfies "runs on Token Factory" because all model calls go there — but Nebius hosting is encouraged, so try it first.
+## After judging
+The endpoint bills while it runs: `nebius ai endpoint delete $ENDPOINT_ID`
+
+## Alternative: build on your PC
+Install Docker Desktop, then build and push to Nebius Container Registry instead of GHCR:
+```bash
+export REGION_ID=eu-west2
+export REGISTRY_PATH=$(nebius registry create --name m2a-registry --format json | jq -r ".metadata.id" | cut -d- -f 2)
+nebius registry configure-helper
+export IMAGE=cr.$REGION_ID.nebius.cloud/$REGISTRY_PATH/meeting-to-actions:v1
+docker build --platform linux/amd64 -t $IMAGE . && docker push $IMAGE
+```
+Then use `--image $IMAGE` in step 2.
